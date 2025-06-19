@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bloomify - Home</title>
+  <style>
+    /* Reset */
+    * {
+      margin: 0; padding: 0; box-sizing: border-box;
+    }
+    html {
+      scroll-behavior: smooth;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #fff0f5;  /* light pink */
+      color: #5e4a9e;       /* purple text */
+      overflow-x: hidden;
+      transition: background 0.4s, color 0.4s;
+    }
+    body.dark-theme {
+      background: #5e4a9e;  /* purple background */
+      color: #fff0f5;       /* light pink text */
+    }
+    nav.navbar {
+      background: #f8bbd0;  /* pink navbar */
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      transition: background 0.4s;
+    }
+    body.dark-theme nav.navbar {
+      background: #ad7ec6;  /* purple navbar */
+    }
+    nav.navbar ul.nav-left {
+      list-style: none;
+      display: flex;
+      gap: 25px;
+    }
+    nav.navbar ul.nav-left li a {
+      color: #7a407b;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 1.1rem;
+      transition: color 0.3s ease;
+      cursor: pointer;
+    }
+    nav.navbar ul.nav-left li a:hover {
+      color: #e91e63;
+    }
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    button#theme-toggle {
+      background: #e91e63;  /* bright pink */
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      font-weight: 700;
+      box-shadow: 0 3px 8px rgba(233, 30, 99, 0.7);
+      transition: background 0.3s ease;
+    }
+    button#theme-toggle:hover {
+      background: #c2185b;
+    }
+    body.dark-theme button#theme-toggle {
+      background: #ff80ab;  /* light pink button */
+      color: #5e4a9e;
+      box-shadow: 0 3px 8px rgba(255, 128, 171, 0.7);
+    }
+    body.dark-theme button#theme-toggle:hover {
+      background: #f48fb1;
+    }
+
+    /* Loader */
+    #loader {
+      position: fixed;
+      inset: 0;
+      background: #fff0f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 3rem;
+      font-weight: 700;
+      color: #e91e63;
+      z-index: 9999;
+      user-select: none;
+      transition: opacity 0.5s ease;
+    }
+    body.dark-theme #loader {
+      background: #5e4a9e;
+      color: #ff80ab;
+    }
+
+    /* Scroll pop animation */
+    .scroll-pop {
+      opacity: 0;
+      transform: translateY(30px);
+      animation-fill-mode: forwards;
+      animation-duration: 0.7s;
+      animation-timing-function: ease-out;
+      transition: opacity 0.7s, transform 0.7s;
+    }
+    .scroll-pop.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Hero Section */
+    section.hero {
+      height: 80vh;
+      background: url('https://source.unsplash.com/1600x900/?flowers,bouquet') center/cover no-repeat fixed;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      color: white;
+      text-align: center;
+      padding: 0 1rem;
+      transition: background 0.4s;
+    }
+    section.hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(233, 30, 99, 0.7);
+      z-index: 0;
+      transition: background 0.4s;
+    }
+    body.dark-theme section.hero::before {
+      background: rgba(94, 74, 158, 0.7);
+    }
+    .hero-text {
+      position: relative;
+      z-index: 1;
+      max-width: 800px;
+      animation: fadeInUp 1.5s ease forwards;
+      opacity: 0;
+    }
+    .hero-text h1 {
+      font-size: 3.5rem;
+      margin-bottom: 1rem;
+      text-shadow: 0 2px 6px rgba(0,0,0,0.5);
+    }
+    .hero-text p {
+      font-size: 1.3rem;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.4);
+    }
+
+    /* Features Section with Carousel */
+    section.features-section {
+      padding: 3rem 1rem 1rem;
+      max-width: 960px;
+      margin: 0 auto 3rem auto;
+      transition: color 0.4s;
+    }
+    section.features-section h2 {
+      text-align: center;
+      margin-bottom: 0.5rem;
+      font-size: 2.3rem;
+      color: #e91e63;
+      font-weight: 700;
+    }
+    section.features-section p.info-text {
+      text-align: center;
+      max-width: 700px;
+      margin: 0 auto 2rem auto;
+      font-size: 1.1rem;
+      color: #7a2a57;
+      line-height: 1.5;
+    }
+    body.dark-theme section.features-section h2 {
+      color: #a28ad0;
+    }
+    body.dark-theme section.features-section p.info-text {
+      color: #cbb9e6;
+    }
+    .carousel-container {
+      position: relative;
+      overflow: hidden;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .features-carousel {
+      display: flex;
+      transition: transform 0.5s ease-in-out;
+      will-change: transform;
+    }
+    .feature-card {
+      flex: 0 0 100%;
+      background: #ffe4f1;
+      border-radius: 15px;
+      padding: 2rem 1.5rem;
+      text-align: center;
+      font-size: 1.3rem;
+      color: #9c2b5b;
+      font-weight: 600;
+      user-select: none;
+      box-shadow: 0 4px 15px rgb(233 30 99 / 0.3);
+      transition: background 0.4s, color 0.4s;
+    }
+    body.dark-theme .feature-card {
+      background: #9e8ed0;
+      color: #4b3877;
+      box-shadow: 0 4px 15px rgb(94 74 158 / 0.5);
+    }
+    /* Carousel navigation buttons */
+    .carousel-nav {
+      position: absolute;
+      top: 50%;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      transform: translateY(-50%);
+      pointer-events: none;
+    }
+    .carousel-nav button {
+      pointer-events: auto;
+      background: #e91e63;
+      border: none;
+      color: white;
+      font-size: 1.8rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 50%;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.3s ease;
+      box-shadow: 0 3px 8px rgba(233, 30, 99, 0.6);
+    }
+    .carousel-nav button:hover {
+      background: #b0003a;
+    }
+    body.dark-theme .carousel-nav button {
+      background: #d1aaff;
+      color: #5e4a9e;
+      box-shadow: 0 3px 8px rgba(129, 112, 209, 0.7);
+    }
+    body.dark-theme .carousel-nav button:hover {
+      background: #a28ad0;
+      color: white;
+    }
+
+    /* Mission Section */
+    section.mission {
+      max-width: 800px;
+      margin: 0 auto 3rem;
+      padding: 0 1rem;
+      text-align: center;
+      font-size: 1.2rem;
+      color: #9c2b5b;
+      transition: color 0.4s;
+    }
+    body.dark-theme section.mission {
+      color: #cbb9e6;
+    }
+    section.mission h2.highlight {
+      color: #e91e63;
+      margin-bottom: 1rem;
+      font-size: 2rem;
+      font-weight: 700;
+    }
+
+    /* Showcase Section */
+    section.showcase {
+      max-width: 960px;
+      margin: 0 auto 3rem auto;
+      padding: 0 1rem;
+      text-align: center;
+    }
+    section.showcase h2 {
+      color: #e91e63;
+      margin-bottom: 1rem;
+      font-size: 2rem;
+      transition: color 0.4s;
+      font-weight: 700;
+    }
+    body.dark-theme section.showcase h2 {
+      color: #a28ad0;
+    }
+    .carousel {
+      display: flex;
+      gap: 1rem;
+      overflow-x: auto;
+      scroll-behavior: smooth;
+      padding-bottom: 0.5rem;
+    }
+    .carousel img {
+      width: 300px;
+      height: 200px;
+      border-radius: 10px;
+      object-fit: cover;
+      box-shadow: 0 4px 12px rgb(233 30 99 / 0.3);
+      transition: box-shadow 0.3s ease;
+      user-select: none;
+    }
+    .carousel img:hover {
+      box-shadow: 0 8px 20px rgb(233 30 99 / 0.7);
+    }
+
+    /* Stats Section */
+    section.stats-section {
+      max-width: 960px;
+      margin: 0 auto 3rem auto;
+      padding: 0 1rem;
+      transition: color 0.4s;
+      text-align: center;
+    }
+    section.stats-section h2 {
+      color: #e91e63;
+      margin-bottom: 2rem;
+      font-size: 2.3rem;
+      font-weight: 700;
+    }
+    body.dark-theme section.stats-section h2 {
+      color: #a28ad0;
+    }
+    .charts {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    canvas {
+      background: #ffe4f1;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(233,30,99,0.15);
+      max-width: 320px;
+      width: 100%;
+      height: 250px;
+      transition: background 0.4s;
+    }
+    body.dark-theme canvas {
+      background: #bda7e0;
+    }
+
+    /* Testimonials Section */
+    section.testimonials {
+      max-width: 700px;
+      margin: 3rem auto 2rem;
+      user-select: none;
+      text-align: center;
+      color: #7a2a57;
+      transition: color 0.4s;
+    }
+    body.dark-theme section.testimonials {
+      color: #cbb9e6;
+    }
+    section.testimonials h2 {
+      color: #e91e63;
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      font-weight: 700;
+    }
+    .testimonial-lines {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .testimonial-line {
+      cursor: pointer;
+      padding: 0.5rem 1rem;
+      border-radius: 25px;
+      background: #ffe4f1;
+      box-shadow: 0 4px 12px rgba(233,30,99,0.3);
+      font-style: italic;
+      font-size: 1rem;
+      user-select: none;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      max-width: 180px;
+      color: #9c2b5b;
+    }
+    body.dark-theme .testimonial-line {
+      background: #d8c5e7;
+      color: #5e4a9e;
+      box-shadow: 0 4px 15px rgba(94,74,158,0.5);
+    }
+    .testimonial-line:hover, .testimonial-line.active {
+      background: #e91e63;
+      color: white;
+      box-shadow: 0 6px 18px rgba(233,30,99,0.7);
+    }
+
+    /* Detailed testimonial box */
+    #testimonial-detail {
+      margin-top: 1.5rem;
+      min-height: 120px;
+      padding: 1rem 1.5rem;
+      border-radius: 15px;
+      background: #ffe4f1;
+      box-shadow: 0 4px 15px rgba(233,30,99,0.3);
+      font-style: italic;
+      font-size: 1.1rem;
+      color: #9c2b5b;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+      transition: opacity 0.5s ease;
+    }
+    body.dark-theme #testimonial-detail {
+      background: #d8c5e7;
+      color: #5e4a9e;
+      box-shadow: 0 4px 15px rgba(94,74,158,0.6);
+    }
+
+    /* Footer */
+    footer.footer {
+      background: #f48fb1;
+      padding: 1rem;
+      text-align: center;
+      font-weight: 700;
+      color: #9c2b5b;
+      transition: background 0.4s, color 0.4s;
+    }
+    body.dark-theme footer.footer {
+      background: #7a62d0;
+      color: #d8c5e7;
+    }
+
+    /* Keyframes */
+    @keyframes fadeInUp {
+      from {
+        transform: translateY(30px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Loader -->
+  <div id="loader">0%</div>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <ul class="nav-left">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="gallery.html">Gallery</a></li>
+      <li><a href="#stats-section">Stats</a></li>
+    </ul>
+    <div class="nav-right">
+      <button id="theme-toggle">Toggle Theme</button>
+    </div>
+  </nav>
+
+  <!-- Why Choose Bloomify? -->
+  <section class="features-section scroll-pop">
+    <h2>Why Choose Bloomify?</h2>
+    <p class="info-text">
+      At Bloomify, we bring you an unmatched variety of flowers, sourced fresh daily. Our skilled florists hand-tie each bouquet with care and precision. Enjoy fast and reliable delivery with eco-friendly packaging that respects the planet. We offer real-time tracking and personalized customization to make your floral experience truly unique.
+    </p>
+    <div class="carousel-container">
+      <div class="features-carousel">
+        <div class="feature-card">🌼 Over 100+ Flower Types to Choose From</div>
+        <div class="feature-card">🚚 Fast, Reliable Doorstep Delivery</div>
+        <div class="feature-card">🛍️ Hand-Tied Custom Bouquets</div>
+        <div class="feature-card">📦 Eco-Friendly and Stylish Packaging</div>
+        <div class="feature-card">📈 Real-time Order Tracking & Stats</div>
+      </div>
+      <div class="carousel-nav">
+        <button id="carousel-prev">&#8249;</button>
+        <button id="carousel-next">&#8250;</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Hero Section -->
+  <section class="hero parallax scroll-pop">
+    <div class="hero-text">
+      <h1>Welcome to Bloomify</h1>
+      <p>Design your own bouquet, choose the exact flowers you want, and we’ll deliver your vision to your doorstep with care.</p>
+    </div>
+  </section>
+
+  <!-- Mission Section -->
+  <section class="mission scroll-pop">
+    <h2 class="highlight">Our Mission</h2>
+    <p>We believe every bouquet tells a story. With Bloomify, you're the author — pick each flower, mix and match, and create something truly personal.</p>
+  </section>
+
+  <!-- Showcase Section -->
+  <section class="showcase scroll-pop">
+    <h2>Showcase of Previous Bouquets</h2>
+    <div class="carousel">
+      <img src="assets/1.jpg" alt="Bouquet Sample 1" />
+      <img src="assets/2.jpg" alt="Bouquet Sample 2" />
+      <img src="assets/3.jpg" alt="Bouquet Sample 3" />
+    </div>
+  </section>
+
+  <!-- Stats Section -->
+  <section class="stats-section scroll-pop" id="stats-section">
+    <h2>Bloomify in Numbers</h2>
+    <div class="charts">
+      <canvas id="ordersChart"></canvas>
+      <canvas id="revenueChart"></canvas>
+      <canvas id="growthChart"></canvas>
+    </div>
+  </section>
+
+  <!-- Testimonials Section -->
+  <section class="testimonials scroll-pop">
+    <h2>What Our Customers Say</h2>
+    <div class="testimonial-lines">
+      <div class="testimonial-line" data-detail="Beautiful bouquets and fast delivery! – Sarah K.">"Beautiful bouquets and fast delivery!"</div>
+      <div class="testimonial-line" data-detail="Amazing customer service and fresh flowers. – James P.">"Amazing customer service and fresh flowers."</div>
+      <div class="testimonial-line" data-detail="I love the customization options! – Emily R.">"I love the customization options!"</div>
+      <div class="testimonial-line" data-detail="Highly recommend Bloomify for all occasions. – Mark T.">"Highly recommend Bloomify for all occasions."</div>
+      <div class="testimonial-line" data-detail="My go-to place for gifting flowers! – Priya S.">"My go-to place for gifting flowers!"</div>
+    </div>
+    <div id="testimonial-detail">Click a testimonial above to see details here.</div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>&copy; 2025 Bloomify. Crafted with 🌸</p>
+  </footer>
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script>
+    // Loader animation
+    const loader = document.getElementById('loader');
+    let loadProgress = 0;
+    const loadInterval = setInterval(() => {
+      loadProgress += 3;
+      loader.textContent = loadProgress + '%';
+      if (loadProgress >= 100) {
+        clearInterval(loadInterval);
+        loader.style.opacity = 0;
+        setTimeout(() => loader.style.display = 'none', 600);
+      }
+    }, 30);
+
+    // Theme toggle
+    document.getElementById('theme-toggle').onclick = () => {
+      document.body.classList.toggle('dark-theme');
+    };
+
+    // Parallax and scroll animations
+    window.addEventListener('scroll', () => {
+      const scrollY = window.scrollY;
+      document.querySelectorAll('.parallax').forEach(el => {
+        el.style.transform = `translateY(${scrollY * 0.3}px)`;
+      });
+      document.querySelectorAll('.scroll-pop').forEach(el => {
+        if(el.getBoundingClientRect().top < window.innerHeight * 0.85) {
+          el.classList.add('visible');
+        }
+      });
+    });
+
+    // Carousel
+    const carousel = document.querySelector('.features-carousel');
+    const prevBtn = document.getElementById('carousel-prev');
+    const nextBtn = document.getElementById('carousel-next');
+    let currentIndex = 0;
+    const totalItems = carousel.children.length;
+    function updateCarousel() {
+      carousel.style.transform = `translateX(-${currentIndex * 100}%)`;
+    }
+    prevBtn.onclick = () => {
+      currentIndex = (currentIndex - 1 + totalItems) % totalItems;
+      updateCarousel();
+    };
+    nextBtn.onclick = () => {
+      currentIndex = (currentIndex + 1) % totalItems;
+      updateCarousel();
+    };
+
+    // Chart.js charts with multi-line labels for month and year
+    const labels = [
+      ['Jan', '2024'],
+      ['Feb', '2024'],
+      ['Mar', '2024'],
+      ['Apr', '2025'],
+      ['May', '2025'],
+      ['Jun', '2025'],
+    ];
+
+    function drawBarChart(ctx, data, labels, color) {
+      return new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [{
+            label: '',
+            data,
+            backgroundColor: color,
+            borderRadius: 6,
+            barPercentage: 0.6,
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: { beginAtZero: true },
+            x: {
+              ticks: {
+                color: document.body.classList.contains('dark-theme') ? '#cbb9e6' : '#7a2a57',
+                font: { size: 12 }
+              },
+              grid: { display: false }
+            }
+          },
+        }
+      });
+    }
+
+    window.onload = () => {
+      const ordersCtx = document.getElementById('ordersChart').getContext('2d');
+      const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+      const growthCtx = document.getElementById('growthChart').getContext('2d');
+
+      drawBarChart(ordersCtx, [120, 150, 170, 190, 210, 230], labels, '#e91e63');
+      drawBarChart(revenueCtx, [30, 45, 50, 60, 80, 95], labels, '#f48fb1');
+      drawBarChart(growthCtx, [5, 7, 10, 15, 20, 25], labels, '#a37ade');
+
+      // Remove loader after charts loaded
+      loader.style.opacity = 0;
+      setTimeout(() => loader.style.display = 'none', 600);
+    };
+
+    // Testimonials interactive logic
+    const testimonialLines = document.querySelectorAll('.testimonial-line');
+    const testimonialDetail = document.getElementById('testimonial-detail');
+    let currentTestimonialIndex = 0;
+    let testimonialInterval;
+
+    function showTestimonialDetail(index) {
+      testimonialLines.forEach(line => line.classList.remove('active'));
+      testimonialLines[index].classList.add('active');
+      testimonialDetail.style.opacity = 0;
+      setTimeout(() => {
+        testimonialDetail.textContent = testimonialLines[index].dataset.detail;
+        testimonialDetail.style.opacity = 1;
+      }, 300);
+      currentTestimonialIndex = index;
+    }
+
+    testimonialLines.forEach((line, i) => {
+      line.addEventListener('click', () => {
+        clearInterval(testimonialInterval);
+        showTestimonialDetail(i);
+        startAutoCycle();
+      });
+    });
+
+    function startAutoCycle() {
+      testimonialInterval = setInterval(() => {
+        let nextIndex = (currentTestimonialIndex + 1) % testimonialLines.length;
+        showTestimonialDetail(nextIndex);
+      }, 6000);
+    }
+
+    // Initialize first testimonial and start cycling
+    showTestimonialDetail(0);
+    startAutoCycle();
+  </script>
+</body>
+</html>

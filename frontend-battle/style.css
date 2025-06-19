@@ -1,0 +1,219 @@
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: #fff8f8;
+  color: #333;
+  transition: background 0.3s, color 0.3s;
+}
+body.dark-theme {
+  background: #222;
+  color: #f0f0f0;
+}
+.navbar {
+  background: #ec407a;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.navbar ul {
+  list-style: none;
+  display: flex;
+  padding: 0;
+}
+.navbar li {
+  margin-right: 20px;
+}
+.navbar a {
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+}
+.ripple {
+  background-color: #ba68c8;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  margin-left: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+.ripple:after {
+  content: '';
+  position: absolute;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+  width: 100px;
+  height: 100px;
+  transform: scale(0);
+  animation: ripple 0.6s linear;
+}
+@keyframes ripple {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+.hero {
+  background: url('https://source.unsplash.com/1600x600/?flowers') center/cover;
+  padding: 100px 20px;
+  color: white;
+  text-align: center;
+}
+.scroll-pop {
+  animation: fadeInUp 1s ease;
+}
+@keyframes fadeInUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0px);
+    opacity: 1;
+  }
+}
+.features-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  padding: 1rem 2rem;
+  justify-content: center;
+}
+.feature {
+  background: #fce4ec;
+  border-radius: 10px;
+  padding: 1rem 2rem;
+}
+.mission, .showcase, .features-section {
+  padding: 2rem;
+  text-align: center;
+}
+.carousel {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+}
+.carousel img {
+  width: 300px;
+  height: 200px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+.footer {
+  padding: 1rem;
+  text-align: center;
+  background: #f8bbd0;
+  margin-top: 3rem;
+}
+.category-card {
+  width: 200px;
+  text-align: center;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  overflow: hidden;
+  text-decoration: none;
+  color: #333;
+}
+.category-card img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+}
+.category-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 2rem;
+  justify-content: center;
+}
+.flower-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 2rem;
+  justify-content: center;
+}
+.flower-card {
+  background: #fff;
+  width: 150px;
+  padding: 10px;
+  text-align: center;
+  border: 2px solid transparent;
+  border-radius: 8px;
+}
+.flower-card.selected {
+  border-color: #ec407a;
+}
+.flower-card img {
+  width: 100%;
+  height: 100px;
+  object-fit: cover;
+}
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+}
+.modal-content {
+  background: white;
+  margin: 5% auto;
+  padding: 2rem;
+  width: 80%;
+  max-width: 700px;
+  border-radius: 10px;
+  position: relative;
+}
+.close-modal {
+  position: absolute;
+  right: 20px;
+  top: 10px;
+  font-size: 2rem;
+  cursor: pointer;
+}
+.modal-buttons {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+
+/* Add to style.css */
+
+.bouquet-realistic {
+  width: 340px;
+  height: 340px;
+  margin: 0 auto;
+  position: relative;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff0f5 20%, #f8bbd0);
+  overflow: hidden;
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.3);
+  clip-path: circle(50% at center);
+}
+
+.real-flower {
+  position: absolute;
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+  transition: transform 0.3s ease;
+}
+
+.bouquet-ribbon {
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+  width: 120px;
+  height: 20px;
+  background: linear-gradient(45deg, #ec407a, #ba68c8);
+  border-radius: 10px;
+  z-index: 999;
+}

@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bloomify - Gallery</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* Navbar right */
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    /* Bouquet button with badge */
+    #show-bouquet-btn {
+      position: relative;
+      padding-right: 2.5rem;
+      cursor: pointer;
+    }
+    #show-bouquet-btn .badge {
+      position: absolute;
+      top: 4px;
+      right: 6px;
+      background: #7e4e9e; /* purple */
+      color: white;
+      font-weight: bold;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      user-select: none;
+    }
+    /* Modal styles */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .modal-content {
+      background: white;
+      border-radius: 10px;
+      padding: 1.5rem;
+      width: 400px;
+      max-width: 90vw;
+      text-align: center;
+      position: relative;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+    .close-modal {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 1.5rem;
+      cursor: pointer;
+      font-weight: bold;
+      border: none;
+      background: none;
+    }
+
+    /* Bouquet preview container: transparent and no extras */
+    #bouquet-preview {
+      position: relative;
+      width: 350px;
+      height: 350px;
+      margin: 1rem auto;
+      background: transparent;
+      overflow: visible;
+    }
+
+    /* Flowers styling */
+    .bouquet-flower {
+      position: absolute;
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 50%;
+      filter: drop-shadow(0 2px 5px rgba(0,0,0,0.2));
+      transition: transform 0.3s ease;
+      transform-origin: center bottom;
+      z-index: 5;
+    }
+
+    /* Flower categories grid */
+    .category-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      padding: 1rem;
+      justify-content: center;
+    }
+    .category-card {
+      width: 180px;
+      text-align: center;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      overflow: hidden;
+      text-decoration: none;
+      color: #333;
+      cursor: pointer;
+      user-select: none;
+    }
+    .category-card img {
+      width: 100%;
+      height: 140px;
+      object-fit: cover;
+    }
+
+    /* Toggle Button Purple */
+    #theme-toggle {
+      background: #7e4e9e;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      font-weight: 700;
+      box-shadow: 0 3px 8px rgba(126, 78, 158, 0.7);
+      transition: background 0.3s ease;
+    }
+    #theme-toggle:hover {
+      background: #673ab7;
+    }
+    body.dark-theme #theme-toggle {
+      background: #d1aaff;
+      color: #5e4a9e;
+      box-shadow: 0 3px 8px rgba(129, 112, 209, 0.7);
+    }
+    body.dark-theme #theme-toggle:hover {
+      background: #a28ad0;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <ul class="nav-left">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="gallery.html">Gallery</a></li>
+    </ul>
+    <div class="nav-right">
+      <button class="ripple" id="theme-toggle">Toggle Theme</button>
+      <button class="ripple" id="show-bouquet-btn">
+        Bouquet <span class="badge" id="flower-count-badge">0</span>
+      </button>
+    </div>
+  </nav>
+
+  <section class="scroll-pop">
+    <h2 style="text-align:center">These are the flowers which are available</h2>
+    <div class="category-grid">
+      <a class="category-card ripple" href="roses.html">
+        <img src="assets/Roses/1.png" alt="Roses" />
+        <h3>Roses</h3>
+      </a>
+      <a class="category-card ripple" href="tulips.html">
+        <img src="assets/Tulips/1.png" alt="Tulips" />
+        <h3>Tulips</h3>
+      </a>
+      <a class="category-card ripple" href="chrysanthemums.html">
+        <img src="assets/Chrysanthemums/1.png" alt="Chrysanthemums" />
+        <h3>Chrysanthemums</h3>
+      </a>
+      <a class="category-card ripple" href="lilies.html">
+        <img src="assets/Lilies/1.png" alt="Lilies" />
+        <h3>Lilies</h3>
+      </a>
+    </div>
+  </section>
+
+  <!-- Bouquet Modal -->
+  <div id="bouquet-modal" class="modal">
+    <div class="modal-content">
+      <button class="close-modal" aria-label="Close">&times;</button>
+      <h2>Your Bouquet Preview (<span id="flower-count">0</span> flowers)</h2>
+      <div id="bouquet-preview"></div>
+    </div>
+  </div>
+
+  <script>
+    const themeToggleBtn = document.getElementById("theme-toggle");
+    const showBouquetBtn = document.getElementById("show-bouquet-btn");
+    const bouquetModal = document.getElementById("bouquet-modal");
+    const closeModalBtn = bouquetModal.querySelector(".close-modal");
+    const bouquetPreview = document.getElementById("bouquet-preview");
+    const flowerCountSpan = document.getElementById("flower-count");
+    const flowerCountBadge = document.getElementById("flower-count-badge");
+
+    themeToggleBtn.onclick = () => {
+      document.body.classList.toggle("dark-theme");
+    };
+
+    function getBouquet() {
+      return JSON.parse(localStorage.getItem("bouquet")) || {};
+    }
+
+    function updateFlowerCount() {
+      const bouquet = getBouquet();
+      const total = Object.values(bouquet).reduce((sum, qty) => sum + qty, 0);
+      flowerCountBadge.textContent = total;
+      flowerCountSpan.textContent = total;
+    }
+
+    function renderBouquet() {
+      bouquetPreview.querySelectorAll('img.bouquet-flower').forEach(img => img.remove());
+
+      const bouquet = getBouquet();
+      let allFlowers = [];
+      Object.entries(bouquet).forEach(([src, qty]) => {
+        for(let i=0; i<qty; i++) allFlowers.push(src);
+      });
+
+      if(allFlowers.length === 0) {
+        bouquetPreview.textContent = "No flowers selected.";
+        return;
+      } else {
+        bouquetPreview.textContent = "";
+      }
+
+      const centerX = 175;
+      const centerY = 175;
+      const maxRadius = 120;
+      const goldenAngle = 137.5 * (Math.PI / 180);
+
+      allFlowers.forEach((src, idx) => {
+        const radius = maxRadius * Math.sqrt(idx) / Math.sqrt(allFlowers.length);
+        const angle = idx * goldenAngle;
+
+        const x = centerX + radius * Math.cos(angle);
+        const y = centerY + radius * Math.sin(angle);
+
+        const img = document.createElement("img");
+        img.src = src;
+        img.className = "bouquet-flower";
+
+        img.style.left = `${x}px`;
+        img.style.top = `${y + 16}px`;
+        const rotationDeg = (Math.random() * 20) - 10;
+        img.style.transform = `translate(-50%, -100%) rotate(${rotationDeg}deg) scale(${0.85 + Math.random() * 0.3})`;
+
+        img.style.zIndex = Math.floor(maxRadius - radius);
+
+        bouquetPreview.appendChild(img);
+      });
+    }
+
+    function clearBouquet() {
+      localStorage.removeItem("bouquet");
+      updateFlowerCount();
+      bouquetPreview.querySelectorAll('img.bouquet-flower').forEach(img => img.remove());
+      bouquetPreview.textContent = "No flowers selected.";
+    }
+
+    function openBouquetModal() {
+      renderBouquet();
+      updateFlowerCount();
+      bouquetModal.style.display = "flex";
+    }
+
+    function closeBouquetModal() {
+      clearBouquet(); // Clear bouquet on modal close
+      bouquetModal.style.display = "none";
+    }
+
+    showBouquetBtn.onclick = () => {
+      openBouquetModal();
+    };
+
+    closeModalBtn.onclick = () => {
+      closeBouquetModal();
+    };
+
+    bouquetModal.addEventListener("click", e => {
+      if(e.target === bouquetModal) {
+        closeBouquetModal();
+      }
+    });
+
+    // Initialize flower count badge on page load
+    updateFlowerCount();
+  </script>
+</body>
+</html>
